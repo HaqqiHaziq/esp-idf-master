@@ -958,7 +958,7 @@ esp_err_t parlio_rx_unit_receive(parlio_rx_unit_handle_t rx_unit,
         ESP_RETURN_ON_FALSE(rx_unit->cfg.valid_gpio_num >= 0, ESP_ERR_INVALID_ARG, TAG, "The validate gpio of this unit is not set");
         /* Check if the valid_sig_line_id is equal or greater than data width, otherwise valid_sig_line_id is conflict with data signal.
          * Specifically, level or pulse delimiter requires one data line as valid signal, so these two delimiters can't support PARLIO_RX_UNIT_MAX_DATA_WIDTH */
-        ESP_RETURN_ON_FALSE(recv_cfg->delimiter->valid_sig_line_id >= rx_unit->cfg.data_width,
+        ESP_RETURN_ON_FALSE(recv_cfg->delimiter->valid_sig_line_id >= rx_unit->cfg.data_width && !(rx_unit->delimiter->mode == PARLIO_RX_PULSE_MODE && rx_unit->delimiter->flags->has_end_pulse && !rx_unit->delimiter->flags->start_bit_included && !rx_unit->delimiter->flags->end_bit_included),
                             ESP_ERR_INVALID_ARG, TAG, "the valid_sig_line_id of this delimiter is conflict with rx unit data width");
         /* Assign the signal here to ensure iram safe */
         recv_cfg->delimiter->valid_sig = parlio_periph_signals.groups[rx_unit->base.group->group_id].
